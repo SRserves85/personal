@@ -2,6 +2,7 @@ import pandas as pd
 import datetime
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import GaussianNB
+from sklearn import cross_validation
 import warnings
 
 
@@ -24,9 +25,16 @@ def prepare_data(df, features):
     gender_dummies = df['gender'].str.get_dummies()
     for col in gender_dummies.columns:
         df[col] = gender_dummies[col]
-    features = df[features]
-    target = df['over']
-    return features, target
+    X = df[features]
+    y = df['over']
+    skf = cross_validation.StratifiedKFold(y, n_folds=2) #2-fold cross validation
+
+    for train_index, test_index in skf:
+        import pdb; pdb.set_trace()
+        print("TRAIN:", train_index, "TEST:", test_index)
+        X_train, X_test = X[train_index], X[test_index]
+        y_train, y_test = y[train_index], y[test_index]
+    return X_train, y_train
 
 if __name__ == '__main__':
 
